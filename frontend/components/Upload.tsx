@@ -11,10 +11,14 @@ import {
     Input,
     InputLabel,
     MenuItem,
-    Select
+    Select, useMediaQuery
 } from "@mui/material";
+import {useTheme} from "@mui/system";
 
 export default function UploadPage() {
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.down('sm'));
+
     const [selectImageBtnName, setSelectImageBtnName] = React.useState("Select file");
     const [loading, setLoading] = React.useState(false);
     const [selectedFile, setSelectedFile] = React.useState(null);
@@ -22,10 +26,15 @@ export default function UploadPage() {
     const [outputSize, setOutputSize] = React.useState(512);
     let [imageUrl, setImageUrl] = useState(null);
 
+    const trimmedString = (string, length) => {
+        return string.length > length ?
+            string.substring(0, length) + '...' :
+            string;
+    };
     const fileUpload = (file) => {
 
         setLoading(true)
-        const url = "http://localhost:3001/upload4?tile=" + tileSize + "&output=" + outputSize;
+        const url = "http://" + window.location.hostname + ":3001/upload4?tile=" + tileSize + "&output=" + outputSize;
         const formData = new FormData();
         formData.append('sampleFile',file)
         const config = {
@@ -54,8 +63,12 @@ export default function UploadPage() {
     };
 
     let handleFileChange = async event => {
+        if (event.target.files[0] === undefined) {
+            return
+        }
         let file = event.target.files[0];
-        setSelectImageBtnName(file.name);
+        let fileName = trimmedString(file.name, 8);
+        setSelectImageBtnName(fileName);
         setSelectedFile(file);
     };
 
@@ -65,33 +78,13 @@ export default function UploadPage() {
     }
 
 
-    let handleFileChange2 = async event => {
-        let file = event.target.files[0];
-        const settings = {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'multipart/form-data',
-            },
-            body:file
-        };
-
-        const res = await fetch("http://localhost:3001/upload4", settings)
-        const url = await res.json()
-        // let { url } = await uploadToS3(file);
-        setImageUrl(url);
-        console.log(url);
-    };
-
-
     // @ts-ignore
     return (
 
         <div>
-            <Grid direction={'row'} spacing={5} container justifyContent={'space-around'} alignItems={'center'}>
-
+            <Grid direction={ matches ? 'column' : 'row'} spacing={5} container justifyContent={'space-around'} alignItems={'center'}>
                 <Grid sx={{paddingLeft: '0 !important', display: 'grid', justifyContent: 'center'}} item xs={3}>
-                    <FormControl required sx={{ m: 10, minWidth: 120 }}>
+                    <FormControl required sx={{ m: matches ? 4 : 10, minWidth: 120 }}>
                         <InputLabel style={{fontFamily:'ZCOOL QingKe HuangYou'}} id="demo-simple-select-required-label">Tile Size</InputLabel>
                         <Select
                             style={{fontFamily:'ZCOOL QingKe HuangYou'}}
@@ -112,7 +105,7 @@ export default function UploadPage() {
                         </Select>
                         <FormHelperText style={{fontFamily:'ZCOOL QingKe HuangYou'}}>Required</FormHelperText>
                     </FormControl>
-                    <FormControl required sx={{ m: 10, minWidth: 120 }}>
+                    <FormControl required sx={{ m: matches ? 4 : 10, minWidth: 120 }}>
                         <InputLabel style={{fontFamily:'ZCOOL QingKe HuangYou'}} id="demo-simple-select-required-label">Output Size</InputLabel>
                         <Select
                             style={{fontFamily:'ZCOOL QingKe HuangYou'}}
@@ -129,14 +122,16 @@ export default function UploadPage() {
                         <FormHelperText style={{fontFamily:'ZCOOL QingKe HuangYou'}}>Required</FormHelperText>
                     </FormControl>
 
-                    <FormControl required sx={{ m: 10, minWidth: 120}}>
+                    <FormControl required sx={{ m: matches ? 4 : 10, minWidth: 120}}>
 
                         <label htmlFor="contained-button-file">
-                            <Input style={{display: 'none'}} onChange={handleFileChange}  accept="image/*" id="contained-button-file" type="file" />
+                            <input style={{display: 'none'}} onChange={handleFileChange}  accept="image/*" id="contained-button-file" type="file" />
                             <Button style={{
+                                textAlign: 'center',
                                 fontFamily:'ZCOOL QingKe HuangYou',
                                 backgroundColor: 'black',
                                 whiteSpace: 'nowrap',
+                                maxWidth: '100px',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis'
                             }} variant="contained" component="span">
@@ -146,14 +141,14 @@ export default function UploadPage() {
                     </FormControl>
 
                 </Grid>
-                <Divider orientation="vertical" flexItem sx={{marginTop: '100px'}} />
+                <Divider hidden={matches} orientation="vertical" flexItem sx={{marginTop: '100px'}} />
                 <Grid item xs={3} sx={{paddingLeft: '0 !important', display: 'grid', justifyContent: 'center'}}>
 
                     <Button color={'error'} style={{fontFamily:'ZCOOL QingKe HuangYou'}} disabled={selectedFile === null || loading} onClick={handleGenerate} variant="contained" component="span">
                         Generate
                     </Button>
                 </Grid>
-                <Divider orientation="vertical" flexItem  sx={{marginTop: '100px'}}  />
+                <Divider hidden={matches} orientation="vertical" flexItem  sx={{marginTop: '100px'}}  />
                 <Grid item xs={3} sx={{paddingLeft: '0 !important', display: 'grid', justifyContent: 'center'}}>
                     <Card style={{minHeight: 300, minWidth: 300, position:'relative'}}>
                         {loading && <CircularProgress style={{width: 20, height: 20, position: 'absolute', left:'45%', top:'50%'}} />}
@@ -162,10 +157,6 @@ export default function UploadPage() {
 
                 </Grid>
             </Grid>
-
-
-
-
         </div>
     );
 }

@@ -1,7 +1,10 @@
 import {PrismaClient} from '@prisma/client'
 import cors from 'cors'
 import express from 'express'
-
+const path = require('path');
+var cron = require('node-cron');
+var fs = require('fs');
+const fsx = require('fs-extra')
 var uniqid = require('uniqid');
 const fileUpload = require('express-fileupload');
 const rustBackend = require('../../pattern-synth/dist');
@@ -17,6 +20,13 @@ app.use(fileUpload({
 }));
 app.use(express.static('public'))
 
+cron.schedule('0 0 10 * * *', function() {
+  console.log('---------------------');
+  console.log('Running temp folder delete');
+  fsx.removeSync(path.join(__dirname, '..', 'public'));
+
+});
+
 app.post('/upload4',  async (req, res) => {
   let sampleFile;
   let uploadPath:string;
@@ -24,18 +34,19 @@ app.post('/upload4',  async (req, res) => {
 
 
   console.log(req.query);
+  console.log(path.join(__dirname, '..', '/public'))
 
   const {tile, output} = req.query;
   // @ts-ignore
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send('No files were uploaded.');
   }
-
+  let hostname = req.headers.host;
   // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
   // @ts-ignore
   sampleFile = req.files.sampleFile;
   uploadPath = __dirname + '/tmp/' + sampleFile.name;
-  let displayPath = "http://localhost:3001/result_" + uid + ".jpg"
+  let displayPath = "http://" + hostname + "/result_" + uid + ".jpg"
 
   // Use the mv() method to place the file somewhere on your server
   // @ts-ignore
@@ -46,8 +57,15 @@ app.post('/upload4',  async (req, res) => {
     rustBackend.runGenSingle(uid,uploadPath, parseInt(tile as string), parseInt(output as string)).then((val: any) => {
       console.log(val)
       console.log("displayPath: " + displayPath)
-      res.json({path: displayPath})
-      // res.send(displayPath);
+
+      fs.unlink(uploadPath, function (err: any) {
+        if (err) throw err;
+        console.log('File deleted!');
+        res.json({path: displayPath})
+      });
+
+
+
     })
 
   });

@@ -2,16 +2,18 @@ import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import {AppBar, CssBaseline, Toolbar} from "@mui/material";
+import {AppBar, CssBaseline, Toolbar, useMediaQuery} from "@mui/material";
 import {Head} from "next/document";
 import "@fontsource/creepster";
 import "@fontsource/zcool-qingke-huangyou";
+import {useTheme} from "@mui/system";
 
 const Header: React.FC = () => {
   const router = useRouter()
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('sm'));
 
   return <>
-
     <CssBaseline />
     <div style={{ flexGrow: 1 }}>
       <AppBar sx={{
@@ -41,7 +43,7 @@ const Header: React.FC = () => {
         </svg>
           {/*<Image width={120} height={30} objectFit={"contain"} src='/assets/logo.png' />*/}
           <h2 style={{color: 'black', fontFamily:'ZCOOL QingKe HuangYou'}}>Pattern Maker</h2>
-          <img alt={''} src='/assets/logo.png' style={{width: 120, height: 30, opacity: 0.0}} />
+          <img alt={''} src='/assets/logo.png' hidden={matches} style={{width: 120, height: 30, opacity: 0.0}} />
         </Toolbar>
       </AppBar>
       <Toolbar />
