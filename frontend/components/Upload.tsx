@@ -23,7 +23,7 @@ export default function UploadPage() {
     const [loading, setLoading] = React.useState(false);
     const [selectedFile, setSelectedFile] = React.useState(null);
     const [tileSize, setTileSize] = React.useState(64);
-    const [outputSize, setOutputSize] = React.useState(512);
+    const [outputSize, setOutputSize] = React.useState(256);
     let [imageUrl, setImageUrl] = useState(null);
 
     const trimmedString = (string, length) => {
@@ -115,6 +115,7 @@ export default function UploadPage() {
                             label="Output Size *"
                             onChange={handleChangeOutputSize}
                         >
+                            <MenuItem value={256}>256</MenuItem>
                             <MenuItem value={512}>512</MenuItem>
                             <MenuItem value={1024}>1024</MenuItem>
                             <MenuItem value={2048}>2048</MenuItem>
