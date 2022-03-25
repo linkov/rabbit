@@ -8,10 +8,12 @@ const fsx = require('fs-extra')
 var uniqid = require('uniqid');
 const fileUpload = require('express-fileupload');
 const rustBackend = require('../../pattern-synth/dist');
-
+const http = require('http');
+const https = require('https');
+const subdomain = require('express-subdomain');
 const prisma = new PrismaClient()
 const app = express()
-
+var router = express.Router();
 app.use(express.json())
 app.use(cors())
 app.use(fileUpload({
@@ -27,7 +29,7 @@ cron.schedule('0 0 10 * * *', function() {
 
 });
 
-app.post('/upload4',  async (req, res) => {
+router.post('/upload4',  async (req, res) => {
   let sampleFile;
   let uploadPath:string;
   let uid = uniqid();
@@ -71,7 +73,7 @@ app.post('/upload4',  async (req, res) => {
   });
 });
 
-app.post('/upload', function(req, res) {
+router.post('/upload', function(req, res) {
   console.log("REQ: ",req);
   console.log("RES:",res);
 
@@ -96,7 +98,7 @@ app.post('/upload', function(req, res) {
   // });
 });
 
-app.get('/gen', async (req, res) => {
+router.get('/gen', async (req, res) => {
   const gen_res = await rustBackend.runGen2("test_256.jpg",1024).then((val: any) => {console.log(val)})
   res.json(gen_res)
 })
@@ -190,9 +192,23 @@ app.post(`/user`, async (req, res) => {
   })
   res.json(result)
 })
+app.use(subdomain('api', router));
+// const server = app.listen(3001, () =>
+//   console.log(
+//     '🚀 Server ready at: http://localhost:3001',
+//   ),
+// )
+// Listen both http & https ports
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer({
+  key: fs.readFileSync('/etc/letsencrypt/live/my_api_url/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/my_api_url/fullchain.pem'),
+}, app);
 
-const server = app.listen(3001, () =>
-  console.log(
-    '🚀 Server ready at: http://localhost:3001',
-  ),
-)
+httpServer.listen(80, () => {
+  console.log('HTTP Server running on port 80');
+});
+
+httpsServer.listen(443, () => {
+  console.log('HTTPS Server running on port 443');
+});
