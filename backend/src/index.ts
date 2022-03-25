@@ -46,7 +46,7 @@ app.post('/upload4',  async (req, res) => {
   // @ts-ignore
   sampleFile = req.files.sampleFile;
   uploadPath = __dirname + '/tmp/' + sampleFile.name;
-  let displayPath = "http://" + hostname + "/result_" + uid + ".jpg"
+  let displayPath = "/assets/result_" + uid + ".jpg"
 
   // Use the mv() method to place the file somewhere on your server
   // @ts-ignore

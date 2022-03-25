@@ -34,7 +34,7 @@ export default function UploadPage() {
     const fileUpload = (file) => {
 
         setLoading(true)
-        const url = "http://" + window.location.hostname + ":3001/upload4?tile=" + tileSize + "&output=" + outputSize;
+        const url = "/api/upload4?tile=" + tileSize + "&output=" + outputSize;
         const formData = new FormData();
         formData.append('sampleFile',file)
         const config = {
