@@ -192,7 +192,7 @@ app.post(`/user`, async (req, res) => {
   })
   res.json(result)
 })
-app.use(subdomain('api', router));
+app.use(router);
 // const server = app.listen(3001, () =>
 //   console.log(
 //     '🚀 Server ready at: http://localhost:3001',
@@ -209,10 +209,6 @@ const httpsServer = https.createServer({
 }, app);
 
 
-httpServer.listen(81, () => {
-  console.log('HTTP Server running on port 80');
-});
-
-httpsServer.listen(443, () => {
+httpsServer.listen(3001, () => {
   console.log('HTTPS Server running on port 443');
 });
