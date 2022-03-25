@@ -34,12 +34,6 @@ const Blog : React.FC<Props> = props => {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await fetch('/feed')
-  const feed = await res.json()
-  return {
-    props: { feed },
-  }
-}
+
 
 export default Blog
