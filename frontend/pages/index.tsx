@@ -35,7 +35,7 @@ const Blog : React.FC<Props> = props => {
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await fetch('http://localhost:3001/feed')
+  const res = await fetch('/feed')
   const feed = await res.json()
   return {
     props: { feed },

@@ -11,7 +11,7 @@ const Draft: React.FC = () => {
     e.preventDefault()
     try {
       const body = { title, content, authorEmail }
-      await fetch(`http://localhost:3001/post`, {
+      await fetch(`/post`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
