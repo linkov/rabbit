@@ -104,7 +104,7 @@ router.get('/gen', async (req, res) => {
 })
 
 
-app.get('/drafts', async (req, res) => {
+router.get('/drafts', async (req, res) => {
   const posts = await prisma.post.findMany({
     where: { published: false },
     include: { author: true }
@@ -112,7 +112,7 @@ app.get('/drafts', async (req, res) => {
   res.json(posts)
 })
 
-app.get('/feed', async (req, res) => {
+router.get('/feed', async (req, res) => {
   const posts = await prisma.post.findMany({
     where: { published: true },
     include: { author: true }
@@ -120,7 +120,7 @@ app.get('/feed', async (req, res) => {
   res.json(posts)
 })
 
-app.get('/filterPosts', async (req, res) => {
+router.get('/filterPosts', async (req, res) => {
   const { searchString }: { searchString?: string } = req.query;
   const filteredPosts = await prisma.post.findMany({
     where: {
@@ -141,7 +141,7 @@ app.get('/filterPosts', async (req, res) => {
   res.json(filteredPosts)
 })
 
-app.post(`/post`, async (req, res) => {
+router.post(`/post`, async (req, res) => {
   const { title, content, authorEmail } = req.body
   const result = await prisma.post.create({
     data: {
@@ -154,7 +154,7 @@ app.post(`/post`, async (req, res) => {
   res.json(result)
 })
 
-app.delete(`/post/:id`, async (req, res) => {
+router.delete(`/post/:id`, async (req, res) => {
   const { id } = req.params
   const post = await prisma.post.delete({
     where: {
@@ -164,7 +164,7 @@ app.delete(`/post/:id`, async (req, res) => {
   res.json(post)
 })
 
-app.get(`/post/:id`, async (req, res) => {
+router.get(`/post/:id`, async (req, res) => {
   const { id } = req.params
   const post = await prisma.post.findUnique({
     where: {
@@ -175,7 +175,7 @@ app.get(`/post/:id`, async (req, res) => {
   res.json(post)
 })
 
-app.put('/publish/:id', async (req, res) => {
+router.put('/publish/:id', async (req, res) => {
   const { id } = req.params
   const post = await prisma.post.update({
     where: { id: Number(id) },
@@ -184,7 +184,7 @@ app.put('/publish/:id', async (req, res) => {
   res.json(post)
 })
 
-app.post(`/user`, async (req, res) => {
+router.post(`/user`, async (req, res) => {
   const result = await prisma.user.create({
     data: {
       ...req.body,
