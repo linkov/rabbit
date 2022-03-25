@@ -197,12 +197,15 @@ app.use(subdomain('api', router));
 //   console.log(
 //     '🚀 Server ready at: http://localhost:3001',
 //   ),
-// )
+// )    ssl_certificate /etc/letsencrypt/live/fvnction.link/fullchain.pem; # managed by Certbot
+//     ssl_certificate_key /etc/letsencrypt/live/fvnction.link/privkey.pem; # managed by Certbot
+//     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+//     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 // Listen both http & https ports
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer({
-  key: fs.readFileSync('/etc/letsencrypt/live/my_api_url/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/my_api_url/fullchain.pem'),
+  key: fs.readFileSync('/etc/letsencrypt/live/fvnction.link/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/fvnction.link/fullchain.pem'),
 }, app);
 
 httpServer.listen(80, () => {
