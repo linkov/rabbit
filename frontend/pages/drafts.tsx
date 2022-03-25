@@ -38,12 +38,5 @@ const Drafts: React.FC<Props> = (props) => {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await fetch("/drafts")
-  const drafts = await res.json()
-  return {
-    props: { drafts },
-  }
-}
 
 export default Drafts
