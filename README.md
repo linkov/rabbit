@@ -1,1 +1,1 @@
-# Fullstack Example with Next.js (REST API) + Rust
+# Fullstack Next.js with Rust lib
